@@ -10,8 +10,8 @@
                 <table class="table">
 
                     <tr>
-                        <th><h5>Items : <strong>3</strong></h5></th>
-                        <th><h5>Total : <strong>Rs 240 </strong></h5></th>
+                        <th><h5>Items : <strong> {{order.get_cart_item}}</strong></h5></th>
+                        <th><h5>Total : <strong>   </strong></h5></th>
                         <th>
 							<a  style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Checkout</a>
 						</th>
@@ -27,22 +27,57 @@
 		            <div style="flex:1"><strong>Quantity</strong></div>
 		            <div style="flex:1"><strong>Total</strong></div>
                 </div>
-
+                {% for item in items %}
+                {% if item.product_m is not None %}
                 <div class="cart-row">
-                    <div style="flex:2"><img src="{% static 'images/placeholder.png' %}" class="row-image" ></div>
-		            <div style="flex:2"> Product</div>
-		            <div style="flex:1"> Rs 220</div>
+                    <div style="flex:2"><img src="{{item.product_m.imageURL}}" class="row-image" ></div>
+		            <div style="flex:2"> {{item.product_m.name}}</div>
+		            <div style="flex:1"> {{item.product_m.price}}</div>
                     <div style="flex:1">
-                        <p class="quantity">2</p>
+                        <p class="quantity"> {{item.quantity}} </p>
 						<div class="quantity">
 							<img class="chg-quantity" src="{% static  'images/arrow-up.png' %}">
 					
 							<img class="chg-quantity" src="{% static  'images/arrow-down.png' %}">
 						</div>
                     </div>
-                    <div style="flex:1"> 440</div>
+                    <div style="flex:1"> {{item.get_mobile_total}}</div>
                 </div>
 
+
+                {% elif item.product_l is not None %}
+                <div class="cart-row">
+                    <div style="flex:2"><img src="{{item.product_l.imageURL}}" class="row-image" ></div>
+		            <div style="flex:2"> {{item.product_l.name}}</div>
+		            <div style="flex:1"> {{item.product_l.price}}</div>
+                    <div style="flex:1">
+                        <p class="quantity"> {{item.quantity}} </p>
+						<div class="quantity">
+							<img class="chg-quantity" src="{% static  'images/arrow-up.png' %}">
+					
+							<img class="chg-quantity" src="{% static  'images/arrow-down.png' %}">
+						</div>
+                    </div>
+                    <div style="flex:1"> {{item.get_laptop_total}}</div>
+                </div>
+
+                {% elif item.product_a is not None %}
+                <div class="cart-row">
+                    <div style="flex:2"><img src="{{item.product_a.imageURL}}" class="row-image" ></div>
+		            <div style="flex:2"> {{item.product_a.name}}</div>
+		            <div style="flex:1"> {{item.product_a.price}}</div>
+                    <div style="flex:1">
+                        <p class="quantity"> {{item.quantity}} </p>
+						<div class="quantity">
+							<img class="chg-quantity" src="{% static  'images/arrow-up.png' %}">
+					
+							<img class="chg-quantity" src="{% static  'images/arrow-down.png' %}">
+						</div>
+                    </div>
+                    <div style="flex:1"> {{item.get_acc_total}}</div>
+                </div>
+                {% endif %}
+                {% endfor %}
             </div>
 
         </div>
