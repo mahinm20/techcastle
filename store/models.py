@@ -27,41 +27,41 @@ class Mobile(models.Model):
             url = ''
         return url                
 
-class Laptop(models.Model):
-    name = models.CharField(max_length=200)
-    price = models.FloatField()
-    digital = models.BooleanField(default=False,null=True,blank=True)
-    image = models.ImageField(null=True, blank=True)
+# class Laptop(models.Model):
+#     name = models.CharField(max_length=200)
+#     price = models.FloatField()
+#     digital = models.BooleanField(default=False,null=True,blank=True)
+#     image = models.ImageField(null=True, blank=True)
     
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
     
-    @property
-    def imageURL(self):
-        try:
-            url = self.image.url
-        except:
-            url = ''
-        return url      
+#     @property
+#     def imageURL(self):
+#         try:
+#             url = self.image.url
+#         except:
+#             url = ''
+#         return url      
 
-class Accessories(models.Model):
-    name = models.CharField(max_length=200)
-    price = models.FloatField()
-    digital = models.BooleanField(default=False,null=True,blank=True)
-    image = models.ImageField(null=True, blank=True)
+# class Accessories(models.Model):
+#     name = models.CharField(max_length=200)
+#     price = models.FloatField()
+#     digital = models.BooleanField(default=False,null=True,blank=True)
+#     image = models.ImageField(null=True, blank=True)
     
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
-    @property
-    def imageURL(self):
-        try:
-            url = self.image.url
-        except:
-            url = ''
-        return url      
+#     @property
+#     def imageURL(self):
+#         try:
+#             url = self.image.url
+#         except:
+#             url = ''
+#         return url      
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer,on_delete=models.CASCADE,blank=True,null=True)
@@ -75,9 +75,8 @@ class Order(models.Model):
     @property
     def get_cart_total(self):
         orderitems  = OrderItem.objects.all()
-        total = sum([item.get_laptop_total for item in orderitems]) + sum([item.get_acc_total for item in orderitems]) 
-        + sum([item.get_mobile_total for item in orderitems])
-
+        # total = sum([item.get_laptop_total for item in orderitems]) + sum([item.get_acc_total for item in orderitems]) 
+        total =  sum([item.get_mobile_total for item in orderitems])
         return total      
     
     @property
@@ -85,16 +84,25 @@ class Order(models.Model):
         orderitems = OrderItem.objects.all()
         total = sum([i.quantity for i in orderitems]) 
         return total
-    
+
+    @property
+    def shipping(self):
+        shipping = False
+        orderitems = self.orderitem_set.all()
+        for i in orderitems:
+            if i.product_m.digital == False:
+                shipping = True   
+
+        return shipping
     
 
 	 
 
 
 class OrderItem(models.Model):
-    product_m = models.ForeignKey(Mobile,on_delete=models.CASCADE,null=True,blank=True)
-    product_l = models.ForeignKey(Laptop,on_delete=models.CASCADE,null=True,blank=True)
-    product_a = models.ForeignKey(Accessories,on_delete=models.CASCADE,null=True,blank=True)
+    product_m = models.ForeignKey(Mobile,on_delete=models.SET_NULL,null=True)
+    # product_l = models.ForeignKey(Laptop,on_delete=models.SET_NULL,null=True)
+    # product_a = models.ForeignKey(Accessories,on_delete=models.SET_NULL,null=True)
     order = models.ForeignKey(Order,on_delete=models.SET_NULL,null=True,blank=True)
     
     quantity = models.IntegerField(default=0,null=True,blank=True)    
@@ -107,21 +115,22 @@ class OrderItem(models.Model):
     #         return str(self.product_a__name)
     #     elif (self.product_m__name is not None):
     #         return str(self.product_m__name)    
-    @property
-    def get_laptop_total(self):  
-        if self.product_l:  
-            total_l =  self.product_l.price * self.quantity  
-            return total_l
-        else:
-            return 0
     
-    @property
-    def get_acc_total(self):  
-        if self.product_a:  
-            total_a =  self.product_a.price * self.quantity  
-            return total_a
-        else:
-            return 0                      
+    # @property
+    # def get_laptop_total(self):  
+    #     if self.product_l:  
+    #         total_l =  self.product_l.price * self.quantity  
+    #         return total_l
+    #     else:
+    #         return 0
+    
+    # @property
+    # def get_acc_total(self):  
+    #     if self.product_a:  
+    #         total_a =  self.product_a.price * self.quantity  
+    #         return total_a
+    #     else:
+    #         return 0                      
     @property
     def get_mobile_total(self):  
         if self.product_m:  
@@ -130,6 +139,9 @@ class OrderItem(models.Model):
         else:
             return 0
 
+          
+
+    
    
     
 
@@ -139,6 +151,7 @@ class ShippingAddress(models.Model):
     address = models.CharField(max_length=200,null=False)
     city = models.CharField(max_length=200,null=False)
     zipcode = models.CharField(max_length=200,null=False)
+    state = models.CharField(max_length=200,null=False)
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
